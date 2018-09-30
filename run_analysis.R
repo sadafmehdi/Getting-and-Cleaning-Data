@@ -1,7 +1,8 @@
 # JHU Getting and Cleaning Data Course Project
 
+setwd("D:/Data Science/Getting & Cleaning data/Assignment", "UCI HAR Dataset")
 #define the path
-pathdata = file.path("D:/Data Science/Getting & Cleaning data/Assignment", "UCI HAR Dataset")
+#pathdata = file.path("D:/Data Science/Getting & Cleaning data/Assignment", "UCI HAR Dataset")
 #create a file which has the 28 file names
 files = list.files(pathdata, recursive=TRUE)
 #show the files
@@ -21,7 +22,7 @@ features = read.table(file.path(pathdata, "features.txt"),header = FALSE)
 #Read activity labels data
 activityLabels = read.table(file.path(pathdata, "activity_labels.txt"),header = FALSE)
 
-##4.Tagging the test and train data sets
+##Tagging the test and train data sets
 #Create Sanity and Column Values to the Train Data
 colnames(xtrain) = features[,2]
 colnames(ytrain) = "activityId"
@@ -33,13 +34,13 @@ colnames(subject_test) = "subjectId"
 #Create sanity check for the activity labels value
 colnames(activityLabels) <- c('activityId','activityType')
 
-##1.Merging the train and test data - important outcome of the project
+##Merging the train and test data - important outcome of the project
 mrg_train = cbind(ytrain, subject_train, xtrain)
 mrg_test = cbind(ytest, subject_test, xtest)
 #Create the main data table merging both table tables - this is the outcome of 1
 setAllInOne = rbind(mrg_train, mrg_test)
 
-##2.Extracting only the measurements on the mean and standard deviation for each measurement
+##Extracting only the measurements on the mean and standard deviation for each measurement
 #Need step is to read all the values that are available
 colNames = colnames(setAllInOne)
 #Need to get a subset of all the mean and standards and the correspondongin activityID and subjectID 
@@ -48,12 +49,12 @@ mean_and_std = (grepl("activityId" , colNames) | grepl("subjectId" , colNames) |
 setForMeanAndStd <- setAllInOne[ , mean_and_std == TRUE]
 
 
-##3.Use descriptive activity names to name the activities in the data set
+##Use descriptive activity names to name the activities in the data set
 setWithActivityNames = merge(setForMeanAndStd, activityLabels, by='activityId', all.x=TRUE)
 
-##5. New tidy set has to be created 
+##New tidy set has to be created 
 secTidySet <- aggregate(. ~subjectId + activityId, setWithActivityNames, mean)
 secTidySet <- secTidySet[order(secTidySet$subjectId, secTidySet$activityId),]
 
 #The last step is to write the ouput to a text file 
-write.table(secTidySet, "secTidySet.txt", row.name=FALSE)
+write.table(secTidySet, "secTidySet.txt", row.name=FALSE,col.names = TRUE)
